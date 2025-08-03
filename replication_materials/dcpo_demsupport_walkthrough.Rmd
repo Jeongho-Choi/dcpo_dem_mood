@@ -1,0 +1,74 @@
+---
+title: "Democratic Support Analysis Walkthrough"
+output: html_document
+---
+
+# Introduction
+
+This document provides an annotated walkthrough of key steps in the original `dcpo_demsupport.Rmd` analysis. Each code chunk includes detailed comments explaining its purpose so that the analysis can be replicated and understood later.
+
+```{r setup, message=FALSE, warning=FALSE}
+# Load the packages that are used throughout the analysis.  The `tidyverse`
+# collection supplies data manipulation and visualization tools.  The `here`
+# package constructs file paths relative to the project root, making the
+# document portable across different machines.  Finally, we source a custom
+# function script that contains helper routines used later.
+
+library(tidyverse)  # For data wrangling and plotting
+library(here)       # For reliable file path construction
+
+# Load user-defined helper functions located in the project's root directory.
+source(here("customFunctions.R"))
+```
+
+# Load Data
+
+```{r load-data}
+# The original study relies on a dataset of democratic mood and support.  For
+# clarity, we import a simplified example dataset included with the replication
+# materials.  The CSV file contains yearly measures of democratic mood for
+# several countries.
+
+data <- read_csv(here("replication_materials", "data_replication", "mood_dem.csv"))
+
+# Display the first few rows so the structure of the data is clear.
+head(data)
+```
+
+# Summarise Democratic Support Over Time
+
+```{r summarize}
+# To understand the overall trend, compute the average democratic mood by year.
+# `group_by` defines the grouping variable, and `summarise` calculates the mean
+# for each year while removing missing values with `na.rm = TRUE`.
+
+yearly_mood <- data %>%
+    group_by(year) %>%
+    summarise(avg_mood = mean(mood, na.rm = TRUE))
+
+yearly_mood
+```
+
+# Visualize the Trend
+
+```{r plot, fig.cap="Average democratic mood over time"}
+# Finally, plot the yearly averages to visualize how democratic mood changes
+# over time.  `geom_line` draws the line plot and `geom_point` adds points for
+# each year.  Labels clarify the axes and title.
+
+ggplot(yearly_mood, aes(x = year, y = avg_mood)) +
+    geom_line(color = "steelblue") +
+    geom_point(color = "darkred") +
+    labs(
+        x = "Year",
+        y = "Average Democratic Mood",
+        title = "Average Democratic Mood Across Years"
+    )
+```
+
+# Next Steps
+
+The remaining portions of the original analysis involve complex statistical
+models and extensive robustness checks.  Those sections can be incorporated here
+following the same pattern: include the code chunk from `dcpo_demsupport.Rmd`
+and add descriptive comments above each operation to clarify its purpose.
